@@ -1,23 +1,42 @@
 
-import products from "@/data/products.json";
-import CheckoutClient from "./product-client";
+"use client";
 
-export function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
-}
+import { useState } from "react";
+import { getRandomStatus } from "@/lib/transaction";
 
-export default function ProductDetailPage({ params }: { params: { slug: string } }) {
-  const product = products.find((item) => item.slug === params.slug);
+export default function CheckPage() {
+  const [trxId, setTrxId] = useState("");
+  const [status, setStatus] = useState("");
 
-  if (!product) {
-    return (
-      <main className="section">
-        <div className="container">
-          <div className="card"><h1>Produk tidak ditemukan</h1></div>
-        </div>
-      </main>
-    );
+  function handleCheck() {
+    if (!trxId) return;
+    setStatus(getRandomStatus());
   }
 
-  return <CheckoutClient product={product} />;
+  return (
+    <main className="section">
+      <div className="container">
+        <h1 className="section-title">Cek Status Transaksi</h1>
+        <div className="card" style={{ maxWidth: 520 }}>
+          <div className="field">
+            <label>ID Transaksi</label>
+            <input
+              className="input"
+              value={trxId}
+              onChange={(e) => setTrxId(e.target.value)}
+              placeholder="Contoh: TRX-ABCDEFGH"
+            />
+          </div>
+          <button className="button" onClick={handleCheck}>Cek Sekarang</button>
+
+          {status && (
+            <div style={{ marginTop: 16 }}>
+              <p>Status transaksi:</p>
+              <span className={`status ${status}`}>{status}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
+  );
 }
